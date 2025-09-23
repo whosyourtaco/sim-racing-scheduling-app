@@ -796,6 +796,21 @@ select.form-control {
   margin-bottom: var(--space-16);
 }
 
+/* Search Container */
+.search-container {
+  margin-bottom: var(--space-16);
+}
+
+.search-input {
+  max-width: 400px;
+  margin: 0;
+}
+
+.search-input::placeholder {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
 /* Event Filters */
 .event-filters {
   display: flex;
@@ -951,6 +966,26 @@ select.form-control {
 .rsvp-indicator.none {
   background: var(--color-secondary);
   color: var(--color-text-secondary);
+}
+
+/* Sort Controls */
+.sort-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-bottom: var(--space-24);
+}
+
+.sort-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sort-select {
+  max-width: 280px;
+  margin: 0;
 }
 
 /* Team Status */

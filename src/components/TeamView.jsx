@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { formatDate, getRSVPText } from '../utils/formatters.js';
 
 function TeamView({ events, teamMembers, rsvpData, currentUser }) {
+  const [sortBy, setSortBy] = useState('date');
+
   // Calculate team statistics
   const totalEvents = events.length;
 
@@ -24,9 +26,40 @@ function TeamView({ events, teamMembers, rsvpData, currentUser }) {
 
   const avgAvailability = totalResponses > 0 ? Math.round((totalAvailability / totalResponses) * 100) : 0;
 
+  // Sort events based on selected criteria
+  const sortedEvents = useMemo(() => {
+    return [...events].sort((a, b) => {
+      if (sortBy === 'date') {
+        return new Date(a.start_time) - new Date(b.start_time);
+      } else if (sortBy === 'availability') {
+        // Count available people for each event
+        const aAvailable = teamMembers.filter(member =>
+          rsvpData[a.id] && rsvpData[a.id][member] === 'available'
+        ).length;
+        const bAvailable = teamMembers.filter(member =>
+          rsvpData[b.id] && rsvpData[b.id][member] === 'available'
+        ).length;
+        return bAvailable - aAvailable; // Descending order
+      }
+      return 0;
+    });
+  }, [events, sortBy, teamMembers, rsvpData]);
+
   return (
     <div className="view-header">
       <h2>Team Status Overview</h2>
+      <div className="sort-controls">
+        <label htmlFor="sort-select" className="sort-label">Sort by:</label>
+        <select
+          id="sort-select"
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="form-control sort-select"
+        >
+          <option value="date">Date</option>
+          <option value="availability">Available People (Most First)</option>
+        </select>
+      </div>
       <div className="team-stats">
         <div className="stat-card">
           <span className="stat-number">{totalEvents}</span>
@@ -38,7 +71,7 @@ function TeamView({ events, teamMembers, rsvpData, currentUser }) {
         </div>
       </div>
       <div className="team-grid">
-        {events.map(event => {
+        {sortedEvents.map(event => {
           const eventDate = new Date(event.start_time);
 
           return (
