@@ -16,10 +16,7 @@ function App() {
     const [authModalOpen, setAuthModalOpen] = useState(false);
     const [currentEventId, setCurrentEventId] = useState(null);
     const [authenticationChecked, setAuthenticationChecked] = useState(false);
-    const [practiceData, setPracticeData] = useState(() => {
-        const saved = localStorage.getItem('practiceData');
-        return saved ? JSON.parse(saved) : {};
-    });
+    // Practice data is now managed by useAppData hook
 
     const {
         currentUser,
@@ -38,9 +35,12 @@ function App() {
         setTeamMembers,
         rsvpData,
         setRsvpData,
+        practiceData,
+        setPracticeData,
         loading,
         refreshAppData,
-        updateRSVP
+        updateRSVP,
+        updatePracticeAvailability
     } = useAppData();
 
     const currentEvent = currentEventId ? events.find(e => e.id === currentEventId) : null;
@@ -66,20 +66,7 @@ function App() {
     };
 
     const closeAuthModal = () => {
-        // Only allow closing if user is authenticated
-        if (isAuthenticated) {
-            setAuthModalOpen(false);
-        }
-    };
-
-    const handleSignOut = () => {
-        signOut();
-        closeEventModal();
-        // Clear practice data on sign out for privacy
-        setPracticeData({});
-        localStorage.removeItem('practiceData');
-        // Force authentication modal to open after sign out
-        setAuthModalOpen(true);
+        setAuthModalOpen(false);
     };
 
     const handleUpdateRSVP = async (eventId, member, status) => {
@@ -90,27 +77,7 @@ function App() {
         await updateRSVP(eventId, member, status);
     };
 
-    const updatePracticeAvailability = async (eventId, member, availability) => {
-        if (!isAuthenticated || !member) {
-            return;
-        }
-
-        const newPracticeData = {
-            ...practiceData,
-            [eventId]: {
-                ...practiceData[eventId],
-                [member]: availability
-            }
-        };
-
-        setPracticeData(newPracticeData);
-
-        // Save to localStorage
-        localStorage.setItem('practiceData', JSON.stringify(newPracticeData));
-
-        // TODO: Save to Firebase/database
-        console.log(`Practice availability updated for ${member} on event ${eventId}:`, availability);
-    };
+    // updatePracticeAvailability is now provided by useAppData hook
 
     // Force authentication on app load
     useEffect(() => {
@@ -155,7 +122,6 @@ function App() {
             <Header
                 isAuthenticated={isAuthenticated}
                 currentUser={currentUser}
-                signOut={handleSignOut}
                 showAuthModal={showAuthModal}
                 refreshAppData={refreshAppData}
             />

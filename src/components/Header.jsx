@@ -1,7 +1,6 @@
 import React from 'react';
-import MainNavigation from "./MainNavigation.jsx";
 
-function Header({currentView, setCurrentView, isAuthenticated, currentUser, signOut, showAuthModal, refreshAppData}) {
+function Header({isAuthenticated, currentUser, showAuthModal, refreshAppData}) {
     const handleRefresh = async () => {
         const refreshButton = document.getElementById('refresh-button');
         if (refreshButton) {
@@ -41,13 +40,13 @@ function Header({currentView, setCurrentView, isAuthenticated, currentUser, sign
                     <button
                         className="btn btn--outline btn--compact"
                         id="auth-button"
-                        onClick={isAuthenticated ? signOut : showAuthModal}
-                        aria-label={isAuthenticated ? `Sign out ${currentUser}` : 'Sign in'}
+                        onClick={isAuthenticated ? null : showAuthModal}
+                        aria-label={'Sign in'}
                     >
                         <span className="btn-icon">{isAuthenticated ? '👤' : '🔑'}</span>
                         <span className="btn-text">
-              {isAuthenticated ? `${currentUser}` : 'Sign In'}
-            </span>
+                            {isAuthenticated ? `${currentUser}` : 'Sign In'}
+                        </span>
                     </button>
                 </div>
             </div>
