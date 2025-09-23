@@ -8,6 +8,7 @@ import EventModal from './components/EventModal.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import {useAuth} from './hooks/useAuth.js';
 import {useAppData} from './hooks/useAppData.js';
+import {encryptData, decryptData} from './utils/encryption.js';
 import './style.css';
 
 function App() {
@@ -17,8 +18,9 @@ function App() {
     const [currentEventId, setCurrentEventId] = useState(null);
     const [authenticationChecked, setAuthenticationChecked] = useState(false);
     const [practiceData, setPracticeData] = useState(() => {
-        const saved = localStorage.getItem('practiceData');
-        return saved ? JSON.parse(saved) : {};
+        const encrypted = localStorage.getItem('practiceData');
+        const decrypted = decryptData(encrypted);
+        return decrypted || {};
     });
 
     const {
@@ -63,20 +65,7 @@ function App() {
     };
 
     const closeAuthModal = () => {
-        // Only allow closing if user is authenticated
-        if (isAuthenticated) {
-            setAuthModalOpen(false);
-        }
-    };
-
-    const handleSignOut = () => {
-        signOut();
-        closeEventModal();
-        // Clear practice data on sign out for privacy
-        setPracticeData({});
-        localStorage.removeItem('practiceData');
-        // Force authentication modal to open after sign out
-        setAuthModalOpen(true);
+        setAuthModalOpen(false);
     };
 
     const handleUpdateRSVP = async (eventId, member, status) => {
@@ -102,8 +91,9 @@ function App() {
 
         setPracticeData(newPracticeData);
 
-        // Save to localStorage
-        localStorage.setItem('practiceData', JSON.stringify(newPracticeData));
+        // Save encrypted to localStorage
+        const encrypted = encryptData(newPracticeData);
+        localStorage.setItem('practiceData', encrypted);
 
         // TODO: Save to Firebase/database
         console.log(`Practice availability updated for ${member} on event ${eventId}:`, availability);
@@ -152,7 +142,6 @@ function App() {
             <Header
                 isAuthenticated={isAuthenticated}
                 currentUser={currentUser}
-                signOut={handleSignOut}
                 showAuthModal={showAuthModal}
                 refreshAppData={refreshAppData}
             />

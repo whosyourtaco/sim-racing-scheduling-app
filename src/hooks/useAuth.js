@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { saveTeamMembersToFirebase, saveRSVPDataToFirebase, refreshData, removeListeners } from '../firebase/database.js';
+import { saveEncryptedUser, loadEncryptedUser, clearEncryptedUser } from '../utils/encryption.js';
 
 export function useAuth() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in from localStorage
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      setCurrentUser(savedUser);
+    // Check if user is already logged in from encrypted localStorage
+    const savedUserData = loadEncryptedUser();
+    if (savedUserData && savedUserData.username) {
+      setCurrentUser(savedUserData.username);
       setIsAuthenticated(true);
     }
   }, []);
@@ -44,6 +45,12 @@ export function useAuth() {
     setCurrentUser(name);
     setIsAuthenticated(true);
 
+    // Save user data encrypted to localStorage
+    saveEncryptedUser({
+      username: name,
+      loginTime: new Date().toISOString()
+    });
+
     // Save data to Firebase
     try {
       await saveTeamMembersToFirebase(newTeamMembers);
@@ -73,8 +80,11 @@ export function useAuth() {
     setCurrentUser(name);
     setIsAuthenticated(true);
 
-    // Save current user to localStorage (user-specific)
-    localStorage.setItem('currentUser', name);
+    // Save user data encrypted to localStorage
+    saveEncryptedUser({
+      username: name,
+      loginTime: new Date().toISOString()
+    });
 
     // Refresh data from Firebase to get latest team and RSVP data
     try {
@@ -94,7 +104,10 @@ export function useAuth() {
     setCurrentUser(null);
     setIsAuthenticated(false);
 
-    // Remove from localStorage
+    // Clear encrypted user data from localStorage
+    clearEncryptedUser();
+
+    // Also remove any legacy unencrypted data
     localStorage.removeItem('currentUser');
 
     // Remove Firebase listeners to prevent updates while signed out
