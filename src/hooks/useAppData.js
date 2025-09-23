@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import {
   loadTeamMembersFromFirebase,
   loadRSVPDataFromFirebase,
+  loadPracticeDataFromFirebase,
   saveTeamMembersToFirebase,
   saveRSVPDataToFirebase,
+  savePracticeDataToFirebase,
   setupTeamMembersListener,
   setupRSVPDataListener,
+  setupPracticeDataListener,
   refreshData
 } from '../firebase/database.js';
 
@@ -13,6 +16,7 @@ export function useAppData() {
   const [events, setEvents] = useState([]);
   const [teamMembers, setTeamMembers] = useState([]);
   const [rsvpData, setRsvpData] = useState({});
+  const [practiceData, setPracticeData] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Load events data
@@ -63,6 +67,22 @@ export function useAppData() {
         }
       }
 
+      // Load saved practice data from Firebase
+      const firebasePracticeData = await loadPracticeDataFromFirebase();
+      if (firebasePracticeData && Object.keys(firebasePracticeData).length > 0) {
+        setPracticeData(firebasePracticeData);
+      } else {
+        // Fallback to encrypted localStorage
+        const { decryptData } = await import('../utils/encryption.js');
+        const encryptedData = localStorage.getItem('practiceData');
+        const localPracticeData = decryptData(encryptedData) || {};
+        if (Object.keys(localPracticeData).length > 0) {
+          setPracticeData(localPracticeData);
+          // Push local data to Firebase if it exists but Firebase is empty
+          await savePracticeDataToFirebase(localPracticeData);
+        }
+      }
+
       // Set up real-time listeners for data changes
       setupDataListeners();
     } catch (error) {
@@ -97,6 +117,17 @@ export function useAppData() {
     setupRSVPDataListener((data) => {
       // Only update if the data is different
       setRsvpData(prevData => {
+        if (JSON.stringify(prevData) !== JSON.stringify(data)) {
+          return data;
+        }
+        return prevData;
+      });
+    });
+
+    // Listen for practice data changes
+    setupPracticeDataListener((data) => {
+      // Only update if the data is different
+      setPracticeData(prevData => {
         if (JSON.stringify(prevData) !== JSON.stringify(data)) {
           return data;
         }
@@ -148,6 +179,7 @@ export function useAppData() {
       if (data) {
         setTeamMembers(data.teamMembers);
         setRsvpData(data.rsvpData);
+        setPracticeData(data.practiceData);
         return true;
       }
     } catch (error) {
@@ -174,6 +206,31 @@ export function useAppData() {
       // Still save to localStorage as backup
       localStorage.setItem('rsvpData', JSON.stringify(newRsvpData));
       alert("Your RSVP was saved locally but couldn't be synchronized. Please try refreshing later.");
+    }
+  };
+
+  // Update practice availability
+  const updatePracticeAvailability = async (eventId, member, availability) => {
+    const newPracticeData = {
+      ...practiceData,
+      [eventId]: {
+        ...practiceData[eventId],
+        [member]: availability
+      }
+    };
+    setPracticeData(newPracticeData);
+
+    // Save to Firebase
+    try {
+      await savePracticeDataToFirebase(newPracticeData);
+      console.log(`Practice availability updated for ${member} on event ${eventId} and synchronized to Firebase`);
+    } catch (error) {
+      console.error("Error saving practice data to Firebase:", error);
+      // Still save encrypted to localStorage as backup
+      const { encryptData } = await import('../utils/encryption.js');
+      const encrypted = encryptData(newPracticeData);
+      localStorage.setItem('practiceData', encrypted);
+      alert("Your practice availability was saved locally but couldn't be synchronized. Please try refreshing later.");
     }
   };
 
@@ -212,8 +269,11 @@ export function useAppData() {
     setTeamMembers,
     rsvpData,
     setRsvpData,
+    practiceData,
+    setPracticeData,
     loading,
     refreshAppData,
-    updateRSVP
+    updateRSVP,
+    updatePracticeAvailability
   };
 }

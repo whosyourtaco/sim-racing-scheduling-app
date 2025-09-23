@@ -8,7 +8,6 @@ import EventModal from './components/EventModal.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import {useAuth} from './hooks/useAuth.js';
 import {useAppData} from './hooks/useAppData.js';
-import {encryptData, decryptData} from './utils/encryption.js';
 import './style.css';
 
 function App() {
@@ -17,11 +16,7 @@ function App() {
     const [authModalOpen, setAuthModalOpen] = useState(false);
     const [currentEventId, setCurrentEventId] = useState(null);
     const [authenticationChecked, setAuthenticationChecked] = useState(false);
-    const [practiceData, setPracticeData] = useState(() => {
-        const encrypted = localStorage.getItem('practiceData');
-        const decrypted = decryptData(encrypted);
-        return decrypted || {};
-    });
+    // Practice data is now managed by useAppData hook
 
     const {
         currentUser,
@@ -37,9 +32,12 @@ function App() {
         setTeamMembers,
         rsvpData,
         setRsvpData,
+        practiceData,
+        setPracticeData,
         loading,
         refreshAppData,
-        updateRSVP
+        updateRSVP,
+        updatePracticeAvailability
     } = useAppData();
 
     const currentEvent = currentEventId ? events.find(e => e.id === currentEventId) : null;
@@ -76,28 +74,7 @@ function App() {
         await updateRSVP(eventId, member, status);
     };
 
-    const updatePracticeAvailability = async (eventId, member, availability) => {
-        if (!isAuthenticated || !member) {
-            return;
-        }
-
-        const newPracticeData = {
-            ...practiceData,
-            [eventId]: {
-                ...practiceData[eventId],
-                [member]: availability
-            }
-        };
-
-        setPracticeData(newPracticeData);
-
-        // Save encrypted to localStorage
-        const encrypted = encryptData(newPracticeData);
-        localStorage.setItem('practiceData', encrypted);
-
-        // TODO: Save to Firebase/database
-        console.log(`Practice availability updated for ${member} on event ${eventId}:`, availability);
-    };
+    // updatePracticeAvailability is now provided by useAppData hook
 
     // Force authentication on app load
     useEffect(() => {
