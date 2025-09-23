@@ -5,7 +5,7 @@ import CalendarView from './components/CalendarView.jsx';
 import TeamView from './components/TeamView.jsx';
 import PracticeScheduling from './components/PracticeScheduling.jsx';
 import EventModal from './components/EventModal.jsx';
-import AuthModal from './components/AuthModal.jsx';
+import SecureAuthModal from './components/SecureAuthModal.jsx';
 import {useAuth} from './hooks/useAuth.js';
 import {useAppData} from './hooks/useAppData.js';
 import './style.css';
@@ -24,9 +24,12 @@ function App() {
     const {
         currentUser,
         isAuthenticated,
+        requiresMigration,
         registerUser,
         signIn,
-        signOut
+        signOut,
+        checkUserMigrationStatus,
+        migrateLegacyUser
     } = useAuth();
 
     const {
@@ -215,17 +218,19 @@ function App() {
                     updateRSVP={handleUpdateRSVP}
                 />
 
-                <AuthModal
+                <SecureAuthModal
                     isOpen={authModalOpen}
                     onClose={closeAuthModal}
                     registerUser={registerUser}
                     signIn={signIn}
+                    migrateLegacyUser={migrateLegacyUser}
                     teamMembers={teamMembers}
                     setTeamMembers={setTeamMembers}
                     events={events}
                     rsvpData={rsvpData}
                     setRsvpData={setRsvpData}
                     isRequired={!isAuthenticated}
+                    requiresMigration={requiresMigration}
                 />
         </div>
 );
