@@ -20,10 +20,17 @@ function EventModal({ event, isOpen, onClose, currentUser, rsvpData, teamMembers
   return (
     <div className="modal" onClick={handleBackdropClick}>
       <div className="modal-backdrop"></div>
-      <div className="modal-content">
+      <div className="modal-content" role="dialog" aria-labelledby="modal-title" aria-modal="true">
         <div className="modal-header">
-          <h3>{event.name}</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <h3 id="modal-title">{event.name}</h3>
+          <button
+            className="modal-close"
+            onClick={onClose}
+            aria-label="Close modal"
+            type="button"
+          >
+            ×
+          </button>
         </div>
         <div className="modal-body">
           <div className="event-details">
@@ -51,24 +58,33 @@ function EventModal({ event, isOpen, onClose, currentUser, rsvpData, teamMembers
 
           <div className="rsvp-section">
             <h4>Your RSVP Status</h4>
-            <div className="rsvp-buttons">
+            <div className="rsvp-buttons" role="radiogroup" aria-label="RSVP status">
               <button
                 className={`btn rsvp-btn rsvp-available ${userRSVP === 'available' ? 'active' : ''}`}
                 onClick={() => handleRSVPClick('available')}
+                aria-pressed={userRSVP === 'available'}
+                type="button"
               >
-                Available
+                <span className="rsvp-icon">✓</span>
+                <span>Available</span>
               </button>
               <button
                 className={`btn rsvp-btn rsvp-maybe ${userRSVP === 'maybe' ? 'active' : ''}`}
                 onClick={() => handleRSVPClick('maybe')}
+                aria-pressed={userRSVP === 'maybe'}
+                type="button"
               >
-                Maybe
+                <span className="rsvp-icon">?</span>
+                <span>Maybe</span>
               </button>
               <button
                 className={`btn rsvp-btn rsvp-unavailable ${userRSVP === 'unavailable' ? 'active' : ''}`}
                 onClick={() => handleRSVPClick('unavailable')}
+                aria-pressed={userRSVP === 'unavailable'}
+                type="button"
               >
-                Unavailable
+                <span className="rsvp-icon">✗</span>
+                <span>Unavailable</span>
               </button>
             </div>
           </div>

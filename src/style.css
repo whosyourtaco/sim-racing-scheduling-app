@@ -669,6 +669,9 @@ select.form-control {
 .justify-between {
   justify-content: space-between;
 }
+.justify-end {
+  justify-content: end;
+}
 .gap-4 {
   gap: var(--space-4);
 }
@@ -792,7 +795,6 @@ select.form-control {
   margin: 0 auto;
   padding: 0 var(--space-16);
   display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
@@ -817,28 +819,12 @@ select.form-control {
 
 /* Main Navigation */
 .main-navigation {
-  background: var(--color-background);
-  border-bottom: 1px solid var(--color-border);
   position: sticky;
-  top: calc(var(--header-height, 72px));
+  top: calc(var(--header-height, 72px) - 1px);
   z-index: 90;
-  backdrop-filter: blur(8px);
-  background: rgba(var(--color-background-rgb, 252, 252, 249), 0.95);
+  margin-top: -1px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .main-navigation {
-    background: rgba(var(--color-background-dark-rgb, 31, 33, 33), 0.95);
-  }
-}
-
-[data-color-scheme="dark"] .main-navigation {
-  background: rgba(var(--color-background-dark-rgb, 31, 33, 33), 0.95);
-}
-
-[data-color-scheme="light"] .main-navigation {
-  background: rgba(var(--color-background-rgb, 252, 252, 249), 0.95);
-}
 
 .nav-content {
   max-width: var(--container-xl);
@@ -848,7 +834,7 @@ select.form-control {
 
 .nav-tabs {
   display: flex;
-  gap: 0;
+  gap: 140px;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -892,7 +878,7 @@ select.form-control {
 }
 
 .nav-tab-text {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-md);
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
 }
@@ -2130,6 +2116,368 @@ select.form-control {
 }
 
 /* Responsive Design */
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  :root {
+    --space-2: 2px;
+    --space-4: 4px;
+    --space-6: 6px;
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 16px;
+    --space-24: 20px;
+    --space-32: 24px;
+  }
+
+  .container {
+    padding: 0 var(--space-12);
+  }
+
+  .header-content {
+    padding: 0 var(--space-12);
+    flex-wrap: wrap;
+    gap: var(--space-8);
+  }
+
+  .header-title {
+    font-size: var(--font-size-lg);
+    flex: 1;
+    min-width: 0;
+    order: 1;
+  }
+
+  .racing-icon {
+    font-size: var(--font-size-xl);
+  }
+
+  .header-actions {
+    gap: var(--space-4);
+    order: 2;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    padding: var(--space-8) var(--space-12);
+    font-size: var(--font-size-xs);
+    min-height: 36px;
+  }
+
+  .nav-content {
+    padding: 0 var(--space-12);
+  }
+
+  .nav-tabs {
+    gap: var(--space-4);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: var(--space-4);
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab {
+    min-width: 90px;
+    padding: var(--space-8) var(--space-12);
+    flex-shrink: 0;
+  }
+
+  .nav-tab-icon {
+    font-size: var(--font-size-md);
+  }
+
+  .nav-tab-text {
+    font-size: var(--font-size-xs);
+  }
+
+  .main-content {
+    padding: var(--space-16) var(--space-12);
+  }
+
+  .view-header h2 {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--space-16);
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  .event-card {
+    padding: var(--space-16);
+  }
+
+  .event-header {
+    gap: var(--space-8);
+  }
+
+  .event-name {
+    font-size: var(--font-size-md);
+    line-height: 1.3;
+  }
+
+  .event-details {
+    gap: var(--space-8);
+  }
+
+  .event-detail {
+    font-size: var(--font-size-xs);
+  }
+
+  .filters {
+    gap: var(--space-12);
+  }
+
+  .search-filters {
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .search-input {
+    max-width: none;
+    width: 100%;
+  }
+
+  .sort-select {
+    max-width: none;
+    width: 100%;
+  }
+
+  .advanced-filters {
+    grid-template-columns: 1fr;
+    gap: var(--space-12);
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .team-stats-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-16);
+  }
+
+  .team-stats {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: var(--space-12);
+  }
+
+  .stat-card {
+    padding: var(--space-12);
+    min-width: 0;
+    flex: 1;
+  }
+
+  .stat-number {
+    font-size: var(--font-size-xl);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+  }
+
+  .aggregation-controls {
+    align-items: center;
+    text-align: center;
+  }
+
+  .aggregation-hint {
+    font-size: var(--font-size-xs);
+  }
+
+  .team-controls {
+    margin: var(--space-16) 0;
+  }
+
+  .team-filters {
+    flex-direction: column;
+    gap: var(--space-12);
+  }
+
+  .filter-group {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .filter-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .team-event-row {
+    padding: var(--space-12);
+  }
+
+  .team-event-header {
+    flex-direction: column;
+    gap: var(--space-8);
+    align-items: flex-start;
+  }
+
+  .event-name-section {
+    width: 100%;
+  }
+
+  .team-event-name {
+    font-size: var(--font-size-md);
+    line-height: 1.3;
+  }
+
+  .event-meta-section {
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  .team-event-date {
+    font-size: var(--font-size-xs);
+  }
+
+  .attendance-summary {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .attendance-count {
+    font-size: var(--font-size-xs);
+  }
+
+  .attendance-bar {
+    width: 100%;
+    max-width: none;
+    margin-top: var(--space-4);
+  }
+
+  .team-members {
+    gap: var(--space-8);
+  }
+
+  .team-member {
+    padding: var(--space-8);
+    min-width: 0;
+    flex: 1;
+  }
+
+  .member-name {
+    font-size: var(--font-size-xs);
+    line-height: 1.2;
+  }
+
+  .member-rsvp {
+    font-size: var(--font-size-xs);
+    padding: var(--space-4) var(--space-6);
+  }
+
+  .modal-content {
+    margin: var(--space-12);
+    max-height: calc(100vh - 24px);
+    width: calc(100% - 24px);
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header {
+    padding: var(--space-16);
+  }
+
+  .modal-body {
+    padding: var(--space-16);
+    max-height: calc(100vh - 200px);
+  }
+
+  .modal-footer {
+    padding: var(--space-16);
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .rsvp-buttons {
+    flex-direction: column;
+    gap: var(--space-8);
+  }
+
+  .rsvp-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .practice-steps {
+    gap: var(--space-16);
+  }
+
+  .practice-step {
+    padding: var(--space-16);
+  }
+
+  .step-number {
+    width: 30px;
+    height: 30px;
+    font-size: var(--font-size-sm);
+  }
+
+  .step-content h3 {
+    font-size: var(--font-size-md);
+  }
+
+  .events-selection {
+    gap: var(--space-12);
+  }
+
+  .event-checkbox-item {
+    padding: var(--space-12);
+  }
+
+  .availability-grid {
+    gap: var(--space-12);
+  }
+
+  .availability-section {
+    padding: var(--space-12);
+  }
+
+  .time-slots {
+    gap: var(--space-8);
+  }
+
+  .time-slot {
+    padding: var(--space-8);
+    font-size: var(--font-size-xs);
+  }
+
+  .practice-results {
+    gap: var(--space-12);
+  }
+
+  .practice-day {
+    padding: var(--space-12);
+  }
+
+  .day-header {
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .day-name {
+    font-size: var(--font-size-md);
+  }
+
+  .attendance-info {
+    align-items: flex-start;
+    width: 100%;
+  }
+}
+
+/* Large mobile phones and small tablets */
 @media (max-width: 768px) {
   .header-title {
     font-size: var(--font-size-xl);
@@ -2151,11 +2499,11 @@ select.form-control {
   .nav-tab-text {
     font-size: var(--font-size-xs);
   }
-  
+
   .events-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .team-stats-row {
     flex-direction: column;
     align-items: center;
@@ -2172,12 +2520,455 @@ select.form-control {
     align-items: center;
     text-align: center;
   }
-  
+
   .rsvp-buttons {
     flex-direction: column;
   }
-  
+
+  .search-filters {
+    flex-direction: column;
+    gap: var(--space-16);
+  }
+
+  .advanced-filters {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-filters {
+    flex-wrap: wrap;
+    gap: var(--space-12);
+  }
+
+  .filter-group {
+    min-width: calc(50% - 6px);
+  }
+}
+
+/* Tablet and up - ensure touch targets are appropriate */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .btn, .nav-tab, .rsvp-button, .time-slot {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .advanced-filters {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .team-filters {
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    min-width: calc(33.333% - 8px);
+  }
+}
+
+/* Enhanced mobile button styles */
+.btn--compact {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  text-align: left;
+}
+
+.btn-icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-md);
+}
+
+.btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.header-title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Additional mobile enhancements */
+@media (max-width: 480px) {
+  .btn--compact .btn-text {
+    display: none;
+  }
+
+  .btn--compact {
+    min-width: 44px;
+    justify-content: center;
+    padding: var(--space-10) var(--space-8);
+  }
+
+  .header-title-text {
+    font-size: var(--font-size-md);
+  }
+
+  .header-content {
+    min-height: 56px;
+  }
+}
+
+/* Improve touch targets on all interactive elements */
+@media (hover: none) and (pointer: coarse) {
+  .btn,
+  .nav-tab,
+  .rsvp-button,
+  .time-slot,
+  .event-card,
+  .team-member,
+  .form-control,
+  .filter-select {
+    min-height: 44px;
+  }
+
+  .nav-tab {
+    padding: var(--space-12) var(--space-16);
+  }
+
+  .event-card {
+    padding: var(--space-20);
+    cursor: pointer;
+  }
+
+  .event-card:hover {
+    transform: none;
+  }
+
+  .event-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Enhanced scrolling for mobile */
+@media (max-width: 768px) {
+  .modal-body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs {
+    -webkit-overflow-scrolling: touch;
+  }
+
   .team-members {
+    flex-wrap: wrap;
+  }
+
+  .team-member {
+    flex: 1 1 calc(50% - var(--space-4));
+    min-width: 140px;
+  }
+}
+
+/* Improve form elements on mobile */
+@media (max-width: 480px) {
+  .form-control,
+  .filter-select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: var(--space-12);
+  }
+
+  select.form-control {
+    background-size: 16px;
+    background-position: right var(--space-12) center;
+  }
+}
+
+/* Enhanced RSVP button styles */
+.rsvp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+  transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.rsvp-icon {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+/* Mobile-specific RSVP enhancements */
+@media (max-width: 480px) {
+  .rsvp-buttons {
+    gap: var(--space-8);
+    flex-direction: column;
+  }
+
+  .rsvp-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: var(--space-12) var(--space-16);
+    font-size: var(--font-size-md);
+  }
+
+  .rsvp-icon {
+    font-size: var(--font-size-lg);
+    width: 24px;
+    height: 24px;
+  }
+
+  .team-responses-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+
+  .team-response {
+    padding: var(--space-12);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .response-name {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .response-status {
+    font-size: var(--font-size-xs);
+    padding: var(--space-4) var(--space-8);
+  }
+}
+
+/* Accessibility enhancements */
+@media (prefers-reduced-motion: reduce) {
+  .event-card,
+  .btn,
+  .nav-tab,
+  .modal-content {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .btn {
+    border-width: 2px;
+  }
+
+  .event-card {
+    border-width: 2px;
+  }
+
+  .rsvp-indicator {
+    border-width: 2px;
+  }
+}
+
+/* Focus improvements for keyboard navigation */
+.btn:focus-visible,
+.nav-tab:focus-visible,
+.event-card:focus-visible,
+.form-control:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* Improve modal focus trap */
+.modal-content {
+  outline: none;
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Additional mobile improvements */
+@media (max-width: 480px) {
+  /* Prevent horizontal scrolling */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Improve viewport handling */
+  .app {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Better spacing for very small screens */
+  .view-header {
+    padding: var(--space-16) 0;
+  }
+
+  .view-header h2 {
+    margin-bottom: var(--space-12);
+  }
+
+  /* Compact filter sections */
+  .filters {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: var(--space-16);
+    margin-bottom: var(--space-16);
+  }
+
+  /* Improve button hierarchy */
+  .btn--primary {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .btn--outline {
+    background: var(--color-surface);
+  }
+
+  /* Better event card spacing */
+  .event-meta {
+    gap: var(--space-8);
+  }
+
+  .event-meta-item {
+    font-size: var(--font-size-xs);
+    line-height: 1.3;
+  }
+
+  .event-classes {
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+
+  .class-badge {
+    font-size: var(--font-size-xs);
+    padding: var(--space-2) var(--space-6);
+  }
+
+  /* Improve practice scheduling on mobile */
+  .practice-step {
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .step-number {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+  }
+
+  .events-selection {
+    max-height: 60vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .event-checkbox-item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+  }
+
+  .availability-grid {
+    max-height: 60vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .availability-section h5 {
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-8);
+  }
+
+  .time-slot {
+    border-radius: var(--radius-sm);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .time-slot.selected {
+    background: var(--color-primary);
+    color: var(--color-btn-primary-text);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* Improve practice results */
+  .practice-results {
+    max-height: 70vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .practice-day {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+  }
+
+  .day-header {
+    padding-bottom: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--space-8);
+  }
+
+  .day-name {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .practice-members {
+    gap: var(--space-6);
+  }
+
+  .practice-member {
+    font-size: var(--font-size-xs);
+    padding: var(--space-4) var(--space-8);
+    border-radius: var(--radius-sm);
+    background: rgba(var(--color-primary-rgb, 33, 128, 141), 0.1);
+    border: 1px solid rgba(var(--color-primary-rgb, 33, 128, 141), 0.2);
+  }
+}
+
+/* Landscape phone optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  .header {
+    padding: var(--space-8) 0;
+  }
+
+  .header-content {
+    min-height: 48px;
+  }
+
+  .header-title {
+    font-size: var(--font-size-md);
+  }
+
+  .racing-icon {
+    font-size: var(--font-size-lg);
+  }
+
+  .main-navigation {
+    padding: var(--space-8) 0;
+  }
+
+  .nav-tab {
+    padding: var(--space-8) var(--space-12);
+    min-height: 40px;
+  }
+
+  .nav-tab-text {
+    font-size: var(--font-size-xs);
+  }
+
+  .main-content {
+    padding: var(--space-16);
+  }
+
+  .modal-content {
+    max-height: calc(100vh - 40px);
+    margin: var(--space-20);
   }
 }

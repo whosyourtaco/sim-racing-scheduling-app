@@ -6,7 +6,19 @@ function EventCard({ event, isAuthenticated, currentUser, rsvpData, teamMembers,
   const userRSVP = isAuthenticated && rsvpData[event.id] && rsvpData[event.id][currentUser];
 
   return (
-    <div className="event-card" onClick={() => openEventModal(event.id)}>
+    <div
+      className="event-card"
+      onClick={() => openEventModal(event.id)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEventModal(event.id);
+        }
+      }}
+      tabIndex={0}
+      role="button"
+      aria-label={`View details for ${event.name} on ${formatDate(eventDate)}`}
+    >
       <div className={`event-type-badge ${event.type}`}>
         {event.type === 'special' ? 'Special' : 'GET'}
       </div>
