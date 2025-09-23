@@ -268,21 +268,44 @@ function TeamView({ events, teamMembers, rsvpData, currentUser }) {
                 </div>
               </div>
               <div className="team-members">
-                {teamMembers.map(member => {
-                  const status = rsvpData[event.id] && rsvpData[event.id][member];
-                  const isCurrentUser = member === currentUser;
+                {(() => {
+                  // Filter to only show attending members
+                  const attendingMembers = teamMembers.filter(member =>
+                    rsvpData[event.id] && rsvpData[event.id][member] === 'available'
+                  );
+
+                  const maxDisplayed = 6;
+                  const displayedMembers = attendingMembers.slice(0, maxDisplayed);
+                  const remainingCount = attendingMembers.length - maxDisplayed;
 
                   return (
-                    <div key={member} className={`team-member ${isCurrentUser ? 'current-user' : ''}`}>
-                      <span className="member-name">
-                        {member}{isCurrentUser ? ' (You)' : ''}
-                      </span>
-                      <span className={`member-rsvp rsvp-indicator ${status || 'none'}`}>
-                        {getRSVPText(status)}
-                      </span>
-                    </div>
+                    <>
+                      {displayedMembers.map(member => {
+                        const isCurrentUser = member === currentUser;
+                        return (
+                          <div key={member} className={`team-member attending ${isCurrentUser ? 'current-user' : ''}`}>
+                            <span className="member-name">
+                              {member}{isCurrentUser ? ' (You)' : ''}
+                            </span>
+                            <span className="member-rsvp rsvp-indicator available">
+                              {getRSVPText('available')}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {remainingCount > 0 && (
+                        <div className="team-member-overflow">
+                          +{remainingCount} more
+                        </div>
+                      )}
+                      {attendingMembers.length === 0 && (
+                        <div className="no-attendees">
+                          No one attending yet
+                        </div>
+                      )}
+                    </>
                   );
-                })}
+                })()}
               </div>
             </div>
           );

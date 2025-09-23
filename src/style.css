@@ -2970,3 +2970,87 @@ select.form-control {
     margin: var(--space-20);
   }
 }
+
+/* Team member display improvements */
+.team-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  align-items: center;
+}
+
+.team-member.attending {
+  background: rgba(var(--color-success-rgb), 0.1);
+  border-color: rgba(var(--color-success-rgb), 0.2);
+  flex: 0 0 auto;
+  gap: 8px;
+  width: auto;
+  min-width: fit-content;
+  max-width: 160px;
+}
+
+.team-member-overflow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-12);
+  background: rgba(var(--color-text-secondary-rgb, 98, 108, 113), 0.1);
+  border: 1px solid rgba(var(--color-text-secondary-rgb, 98, 108, 113), 0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  flex: 0 0 auto;
+  width: auto;
+  min-width: fit-content;
+}
+
+.no-attendees {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12);
+  background: rgba(var(--color-text-secondary-rgb, 98, 108, 113), 0.05);
+  border: 1px dashed rgba(var(--color-text-secondary-rgb, 98, 108, 113), 0.2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  width: 100%;
+}
+
+/* Mobile optimizations for member chips */
+@media (max-width: 768px) {
+  .team-member.attending {
+    max-width: 140px;
+    font-size: var(--font-size-xs);
+  }
+
+  .team-member.attending .member-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .team-member.attending .member-rsvp {
+    font-size: var(--font-size-xs);
+    padding: var(--space-2) var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .team-members {
+    gap: var(--space-6);
+  }
+
+  .team-member.attending {
+    max-width: 120px;
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .team-member-overflow {
+    padding: var(--space-6) var(--space-8);
+    font-size: var(--font-size-xs);
+  }
+}
