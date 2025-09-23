@@ -1,7 +1,7 @@
 [
   {
     "id": "special_41",
-    "name": "Bathurst 1000",
+    "name": "Bathurst 1000 - Session 1",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-09-26T22:00:00Z",
@@ -56,7 +56,7 @@
   },
   {
     "id": "special_46",
-    "name": "Petit Le Mans",
+    "name": "Petit Le Mans - Session 1",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-10-03T22:00:00Z",
@@ -111,7 +111,7 @@
   },
   {
     "id": "special_51",
-    "name": "Suzuka 1000km",
+    "name": "Suzuka 1000km - Session 1",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-11-14T22:00:00Z",
@@ -166,7 +166,7 @@
   },
   {
     "id": "special_60",
-    "name": "THE Production Car Challenge",
+    "name": "THE Production Car Challenge - Session 1",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-12-19T22:00:00Z",
@@ -177,7 +177,7 @@
   },
   {
     "id": "special_61",
-    "name": "THE Production Car Challenge",
+    "name": "THE Production Car Challenge - Session 2",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-12-20T07:00:00Z",
@@ -188,7 +188,7 @@
   },
   {
     "id": "special_62",
-    "name": "THE Production Car Challenge",
+    "name": "THE Production Car Challenge - Session 3",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-12-20T12:00:00Z",
@@ -199,7 +199,7 @@
   },
   {
     "id": "special_63",
-    "name": "THE Production Car Challenge",
+    "name": "THE Production Car Challenge - Session 4",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-12-20T16:00:00Z",
@@ -210,7 +210,7 @@
   },
   {
     "id": "special_64",
-    "name": "THE Production Car Challenge",
+    "name": "THE Production Car Challenge - Session 5",
     "series": "iRacing Special Events",
     "track": "Various",
     "start_time": "2025-12-21T00:00:00Z",

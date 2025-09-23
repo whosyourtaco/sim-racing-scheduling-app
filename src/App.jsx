@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header.jsx';
+import MainNavigation from './components/MainNavigation.jsx';
 import CalendarView from './components/CalendarView.jsx';
 import TeamView from './components/TeamView.jsx';
+import PracticeScheduling from './components/PracticeScheduling.jsx';
 import EventModal from './components/EventModal.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import { useAuth } from './hooks/useAuth.js';
@@ -13,6 +15,11 @@ function App() {
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [currentEventId, setCurrentEventId] = useState(null);
+  const [authenticationChecked, setAuthenticationChecked] = useState(false);
+  const [practiceData, setPracticeData] = useState(() => {
+    const saved = localStorage.getItem('practiceData');
+    return saved ? JSON.parse(saved) : {};
+  });
 
   const {
     currentUser,
@@ -56,12 +63,20 @@ function App() {
   };
 
   const closeAuthModal = () => {
-    setAuthModalOpen(false);
+    // Only allow closing if user is authenticated
+    if (isAuthenticated) {
+      setAuthModalOpen(false);
+    }
   };
 
   const handleSignOut = () => {
     signOut();
     closeEventModal();
+    // Clear practice data on sign out for privacy
+    setPracticeData({});
+    localStorage.removeItem('practiceData');
+    // Force authentication modal to open after sign out
+    setAuthModalOpen(true);
   };
 
   const handleUpdateRSVP = async (eventId, member, status) => {
@@ -72,12 +87,47 @@ function App() {
     await updateRSVP(eventId, member, status);
   };
 
+  const updatePracticeAvailability = async (eventId, member, availability) => {
+    if (!isAuthenticated || !member) {
+      return;
+    }
+
+    const newPracticeData = {
+      ...practiceData,
+      [eventId]: {
+        ...practiceData[eventId],
+        [member]: availability
+      }
+    };
+
+    setPracticeData(newPracticeData);
+
+    // Save to localStorage
+    localStorage.setItem('practiceData', JSON.stringify(newPracticeData));
+
+    // TODO: Save to Firebase/database
+    console.log(`Practice availability updated for ${member} on event ${eventId}:`, availability);
+  };
+
+  // Force authentication on app load
+  useEffect(() => {
+    if (!loading) {
+      setAuthenticationChecked(true);
+      if (!isAuthenticated) {
+        setAuthModalOpen(true);
+      }
+    }
+  }, [isAuthenticated, loading]);
+
   // Close modals with Escape key
   useEffect(() => {
     const handleEscapeKey = (e) => {
       if (e.key === 'Escape') {
         closeEventModal();
-        closeAuthModal();
+        // Only allow closing auth modal if authentication is not required
+        if (isAuthenticated) {
+          closeAuthModal();
+        }
       }
     };
 
@@ -85,7 +135,7 @@ function App() {
     return () => {
       document.removeEventListener('keydown', handleEscapeKey);
     };
-  }, []);
+  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -98,15 +148,18 @@ function App() {
   }
 
   return (
-    <div className="container">
+    <div className="app">
       <Header
-        currentView={currentView}
-        setCurrentView={setCurrentView}
         isAuthenticated={isAuthenticated}
         currentUser={currentUser}
         signOut={handleSignOut}
         showAuthModal={showAuthModal}
         refreshAppData={refreshAppData}
+      />
+
+      <MainNavigation
+        currentView={currentView}
+        setCurrentView={setCurrentView}
       />
 
       <main className="main-content">
@@ -133,6 +186,19 @@ function App() {
             />
           </div>
         )}
+
+        {currentView === 'practice' && (
+          <div className="view active">
+            <PracticeScheduling
+              events={events}
+              currentUser={currentUser}
+              teamMembers={teamMembers}
+              practiceData={practiceData}
+              updatePracticeAvailability={updatePracticeAvailability}
+              rsvpData={rsvpData}
+            />
+          </div>
+        )}
       </main>
 
       <EventModal
@@ -155,6 +221,7 @@ function App() {
         events={events}
         rsvpData={rsvpData}
         setRsvpData={setRsvpData}
+        isRequired={!isAuthenticated}
       />
     </div>
   );

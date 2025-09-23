@@ -27,19 +27,7 @@ function Header({ currentView, setCurrentView, isAuthenticated, currentUser, sig
           <span className="racing-icon">🏁</span>
           iRacing Team RSVP
         </h1>
-        <div className="header-nav">
-          <button
-            className={`btn btn--outline ${currentView === 'calendar' ? 'active' : ''}`}
-            onClick={() => setCurrentView('calendar')}
-          >
-            Calendar
-          </button>
-          <button
-            className={`btn btn--outline ${currentView === 'team' ? 'active' : ''}`}
-            onClick={() => setCurrentView('team')}
-          >
-            Team Status
-          </button>
+        <div className="header-actions">
           <button
             className="btn btn--outline"
             id="refresh-button"

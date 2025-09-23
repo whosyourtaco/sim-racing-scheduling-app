@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function AuthModal({ isOpen, onClose, registerUser, signIn, teamMembers, setTeamMembers, events, rsvpData, setRsvpData }) {
+function AuthModal({ isOpen, onClose, registerUser, signIn, teamMembers, setTeamMembers, events, rsvpData, setRsvpData, isRequired = false }) {
   const [activeTab, setActiveTab] = useState('login');
   const [loginName, setLoginName] = useState('');
   const [registerName, setRegisterName] = useState('');
@@ -8,7 +8,7 @@ function AuthModal({ isOpen, onClose, registerUser, signIn, teamMembers, setTeam
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
-    if (e.target.classList.contains('modal-backdrop')) {
+    if (!isRequired && e.target.classList.contains('modal-backdrop')) {
       onClose();
     }
   };
@@ -44,10 +44,19 @@ function AuthModal({ isOpen, onClose, registerUser, signIn, teamMembers, setTeam
       <div className="modal-backdrop"></div>
       <div className="modal-content">
         <div className="modal-header">
-          <h3>Sign In / Register</h3>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <h3>{isRequired ? 'Authentication Required' : 'Sign In / Register'}</h3>
+          {!isRequired && (
+            <button className="modal-close" onClick={onClose}>×</button>
+          )}
         </div>
         <div className="modal-body">
+          {isRequired && (
+            <div className="auth-requirement-notice">
+              <p>
+                Please sign in or register to access team features, RSVP to events, and view personalized content.
+              </p>
+            </div>
+          )}
           <div className="auth-tabs">
             <button
               className={`auth-tab-btn ${activeTab === 'login' ? 'active' : ''}`}
