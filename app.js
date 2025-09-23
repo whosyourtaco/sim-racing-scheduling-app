@@ -354,7 +354,7 @@ function renderEvents(filter = 'special') {
     
     grid.innerHTML = filteredEvents.map(event => {
         const eventDate = new Date(event.start_time);
-        const userRSVP = rsvpData[event.id] && rsvpData[event.id][currentUser];
+        const userRSVP = isAuthenticated && rsvpData[event.id] && rsvpData[event.id][currentUser];
         
         return `
             <div class="event-card" onclick="openEventModal('${event.id}')">
@@ -384,7 +384,7 @@ function renderEvents(filter = 'special') {
                 </div>
                 <div class="event-rsvp-status">
                     <span class="rsvp-indicator ${userRSVP || 'none'}">
-                        ${getRSVPText(userRSVP)}
+                        ${isAuthenticated ? getRSVPText(userRSVP) : 'Sign in to RSVP'}
                     </span>
                     <span class="team-availability">${getTeamAvailability(event.id)}</span>
                 </div>
@@ -409,10 +409,11 @@ function renderTeamStatus() {
                 </div>
                 <div class="team-members">
                     ${teamMembers.map(member => {
-                        const status = rsvpData[event.id][member];
+                        const status = rsvpData[event.id] && rsvpData[event.id][member];
+                        const isCurrentUser = member === currentUser;
                         return `
-                            <div class="team-member">
-                                <span class="member-name">${member}</span>
+                            <div class="team-member ${isCurrentUser ? 'current-user' : ''}">
+                                <span class="member-name">${member}${isCurrentUser ? ' (You)' : ''}</span>
                                 <span class="member-rsvp rsvp-indicator ${status || 'none'}">
                                     ${getRSVPText(status)}
                                 </span>
@@ -434,6 +435,8 @@ function updateTeamStats() {
     let totalResponses = 0;
     
     events.forEach(event => {
+        if (!rsvpData[event.id]) return;
+        
         teamMembers.forEach(member => {
             const status = rsvpData[event.id][member];
             if (status === 'available') {
@@ -465,10 +468,11 @@ function renderModalTeamResponses() {
     
     const grid = document.getElementById('modal-team-responses');
     grid.innerHTML = teamMembers.map(member => {
-        const status = rsvpData[currentEventId][member];
+        const status = rsvpData[currentEventId] && rsvpData[currentEventId][member];
+        const isCurrentUser = member === currentUser;
         return `
-            <div class="team-response">
-                <span class="response-name">${member}</span>
+            <div class="team-response ${isCurrentUser ? 'current-user' : ''}">
+                <span class="response-name">${member}${isCurrentUser ? ' (You)' : ''}</span>
                 <span class="response-status rsvp-indicator ${status || 'none'}">
                     ${getRSVPText(status)}
                 </span>
@@ -479,10 +483,17 @@ function renderModalTeamResponses() {
 
 // Update RSVP
 function updateRSVP(eventId, member, status) {
+    if (!isAuthenticated || !member) {
+        return;
+    }
+    
     if (!rsvpData[eventId]) {
         rsvpData[eventId] = {};
     }
     rsvpData[eventId][member] = status;
+    
+    // Save to localStorage
+    saveUserData();
 }
 
 // Format date
