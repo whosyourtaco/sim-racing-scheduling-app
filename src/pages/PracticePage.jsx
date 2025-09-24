@@ -1,10 +1,10 @@
 import PracticeScheduling from '../components/PracticeScheduling.jsx'
-import { useAppData } from '../hooks/useAppData.js'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAppDataContext } from '../contexts/AppDataContext.jsx'
+import { useAuthContext } from '../contexts/AuthContext.jsx'
 
 export default function PracticePage() {
-  const { events, teamMembers, practiceData, updatePracticeAvailability, rsvpData } = useAppData()
-  const { currentUser } = useAuth()
+  const { events, teamMembers, practiceData, updatePracticeAvailability, rsvpData } = useAppDataContext()
+  const { currentUser } = useAuthContext()
 
   return (
     <div className="view active">

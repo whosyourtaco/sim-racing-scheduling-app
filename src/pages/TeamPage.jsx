@@ -1,10 +1,10 @@
 import TeamView from '../components/TeamView.jsx'
-import { useAppData } from '../hooks/useAppData.js'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAppDataContext } from '../contexts/AppDataContext.jsx'
+import { useAuthContext } from '../contexts/AuthContext.jsx'
 
 export default function TeamPage() {
-  const { events, teamMembers, rsvpData } = useAppData()
-  const { currentUser } = useAuth()
+  const { events, teamMembers, rsvpData } = useAppDataContext()
+  const { currentUser } = useAuthContext()
 
   return (
     <div className="view active">

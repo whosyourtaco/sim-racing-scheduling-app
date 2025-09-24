@@ -1,10 +1,10 @@
 import CalendarView from '../components/CalendarView.jsx'
-import { useAppData } from '../hooks/useAppData.js'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAppDataContext } from '../contexts/AppDataContext.jsx'
+import { useAuthContext } from '../contexts/AuthContext.jsx'
 
 export default function CalendarPage({ openEventModal }) {
-  const { events, rsvpData, teamMembers } = useAppData()
-  const { isAuthenticated, currentUser } = useAuth()
+  const { events, rsvpData, teamMembers } = useAppDataContext()
+  const { isAuthenticated, currentUser } = useAuthContext()
 
   return (
     <div className="view active">

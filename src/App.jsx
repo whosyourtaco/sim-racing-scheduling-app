@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuthContext } from './contexts/AuthContext.jsx';
+import { AppDataProvider, useAppDataContext } from './contexts/AppDataContext.jsx';
 import Header from './components/Header.jsx';
 import MainNavigation from './components/MainNavigation.jsx';
 import CalendarPage from './pages/CalendarPage.jsx';
@@ -7,11 +9,9 @@ import TeamPage from './pages/TeamPage.jsx';
 import PracticePage from './pages/PracticePage.jsx';
 import EventModal from './components/EventModal.jsx';
 import SecureAuthModal from './components/SecureAuthModal.jsx';
-import {useAuth} from './hooks/useAuth.js';
-import {useAppData} from './hooks/useAppData.js';
 import './style.css';
 
-function App() {
+function AppContent() {
     const [eventModalOpen, setEventModalOpen] = useState(false);
     const [authModalOpen, setAuthModalOpen] = useState(false);
     const [currentEventId, setCurrentEventId] = useState(null);
@@ -23,7 +23,7 @@ function App() {
         registerUser,
         signIn,
         migrateLegacyUser
-    } = useAuth();
+    } = useAuthContext();
 
     const {
         events,
@@ -34,7 +34,7 @@ function App() {
         loading,
         refreshAppData,
         updateRSVP
-    } = useAppData();
+    } = useAppDataContext();
 
     const currentEvent = currentEventId ? events.find(e => e.id === currentEventId) : null;
 
@@ -108,56 +108,68 @@ function App() {
     }
 
     return (
-        <Router basename="/sim-racing-scheduling-app">
-            <div className="app">
-                <Header
-                    isAuthenticated={isAuthenticated}
-                    currentUser={currentUser}
-                    showAuthModal={showAuthModal}
-                    refreshAppData={refreshAppData}
-                />
+        <div className="app">
+            <Header
+                isAuthenticated={isAuthenticated}
+                currentUser={currentUser}
+                showAuthModal={showAuthModal}
+                refreshAppData={refreshAppData}
+            />
 
-                <header className="header">
-                    <div className="header-content gap-4 justify-center">
-                        <MainNavigation />
-                    </div>
-                </header>
+            <header className="header">
+                <div className="header-content gap-4 justify-center">
+                    <MainNavigation />
+                </div>
+            </header>
 
-                <main className="main-content">
-                    <Routes>
-                        <Route path="/" element={<CalendarPage openEventModal={openEventModal} />} />
-                        <Route path="/team" element={<TeamPage />} />
-                        <Route path="/practice" element={<PracticePage />} />
-                    </Routes>
-                </main>
+            <main className="main-content">
+                <Routes>
+                    <Route path="/" element={<CalendarPage openEventModal={openEventModal} />} />
+                    <Route path="/team" element={<TeamPage />} />
+                    <Route path="/practice" element={<PracticePage />} />
+                    <Route path="*" element={<CalendarPage openEventModal={openEventModal} />} />
+                </Routes>
+            </main>
 
-                <EventModal
-                    event={currentEvent}
-                    isOpen={eventModalOpen}
-                    onClose={closeEventModal}
-                    currentUser={currentUser}
-                    rsvpData={rsvpData}
-                    teamMembers={teamMembers}
-                    updateRSVP={handleUpdateRSVP}
-                />
+            <EventModal
+                event={currentEvent}
+                isOpen={eventModalOpen}
+                onClose={closeEventModal}
+                currentUser={currentUser}
+                rsvpData={rsvpData}
+                teamMembers={teamMembers}
+                updateRSVP={handleUpdateRSVP}
+            />
 
-                <SecureAuthModal
-                    isOpen={authModalOpen}
-                    onClose={closeAuthModal}
-                    registerUser={registerUser}
-                    signIn={signIn}
-                    migrateLegacyUser={migrateLegacyUser}
-                    teamMembers={teamMembers}
-                    setTeamMembers={setTeamMembers}
-                    events={events}
-                    rsvpData={rsvpData}
-                    setRsvpData={setRsvpData}
-                    isRequired={!isAuthenticated}
-                    requiresMigration={requiresMigration}
-                />
-            </div>
-        </Router>
+            <SecureAuthModal
+                isOpen={authModalOpen}
+                onClose={closeAuthModal}
+                registerUser={registerUser}
+                signIn={signIn}
+                migrateLegacyUser={migrateLegacyUser}
+                teamMembers={teamMembers}
+                setTeamMembers={setTeamMembers}
+                events={events}
+                rsvpData={rsvpData}
+                setRsvpData={setRsvpData}
+                isRequired={!isAuthenticated}
+                requiresMigration={requiresMigration}
+            />
+        </div>
     );
+}
+
+// Main App component with providers
+function App() {
+  return (
+    <AuthProvider>
+      <AppDataProvider>
+        <Router basename="/sim-racing-scheduling-app/">
+          <AppContent />
+        </Router>
+      </AppDataProvider>
+    </AuthProvider>
+  );
 }
 
 export default App;

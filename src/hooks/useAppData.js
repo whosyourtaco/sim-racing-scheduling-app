@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   loadTeamMembersFromFirebase,
   loadRSVPDataFromFirebase,
@@ -9,7 +9,8 @@ import {
   setupTeamMembersListener,
   setupRSVPDataListener,
   setupPracticeDataListener,
-  refreshData
+  refreshData,
+  removeListeners
 } from '../firebase/database.js';
 
 export function useAppData() {
@@ -19,8 +20,12 @@ export function useAppData() {
   const [practiceData, setPracticeData] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // Load events data
-  const loadEvents = async () => {
+  // Track initialization status to prevent multiple initializations
+  const isInitialized = useRef(false);
+  const listenersSetup = useRef(false);
+
+  // Load events data - memoized to prevent recreation
+  const loadEvents = useCallback(async () => {
     try {
       const response = await fetch('/sim-racing-scheduling-app/events_data.json');
       const eventsData = await response.json();
@@ -28,10 +33,10 @@ export function useAppData() {
     } catch (error) {
       console.error('Error loading events:', error);
     }
-  };
+  }, []);
 
-  // Load user data from Firebase and localStorage
-  const loadUserData = async () => {
+  // Load user data from Firebase and localStorage - memoized
+  const loadUserData = useCallback(async () => {
     try {
       // Load registered team members from Firebase
       const firebaseTeamMembers = await loadTeamMembersFromFirebase();
@@ -83,8 +88,6 @@ export function useAppData() {
         }
       }
 
-      // Set up real-time listeners for data changes
-      setupDataListeners();
     } catch (error) {
       console.error("Error loading user data:", error);
       // Fallback to localStorage if Firebase fails
@@ -98,10 +101,15 @@ export function useAppData() {
         setRsvpData(JSON.parse(savedRSVPData));
       }
     }
-  };
+  }, []);
 
-  // Set up real-time listeners for data changes
-  const setupDataListeners = () => {
+  // Set up real-time listeners for data changes - memoized and prevents duplicates
+  const setupDataListeners = useCallback(() => {
+    // Prevent setting up listeners multiple times
+    if (listenersSetup.current) {
+      return;
+    }
+
     // Listen for team members changes
     setupTeamMembersListener((data) => {
       // Only update if the data is different
@@ -134,7 +142,9 @@ export function useAppData() {
         return prevData;
       });
     });
-  };
+
+    listenersSetup.current = true;
+  }, []);
 
   // Initialize RSVP data
   const initializeRSVPData = (eventsData, teamMembersData) => {
@@ -172,8 +182,8 @@ export function useAppData() {
     });
   };
 
-  // Manual refresh function for the refresh button
-  const refreshAppData = async () => {
+  // Manual refresh function for the refresh button - memoized
+  const refreshAppData = useCallback(async () => {
     try {
       const data = await refreshData();
       if (data) {
@@ -186,56 +196,60 @@ export function useAppData() {
       console.error("Error refreshing data:", error);
       return false;
     }
-  };
+  }, []);
 
-  // Update RSVP
-  const updateRSVP = async (eventId, member, status) => {
-    const newRsvpData = { ...rsvpData };
-    if (!newRsvpData[eventId]) {
-      newRsvpData[eventId] = {};
-    }
-    newRsvpData[eventId][member] = status;
-    setRsvpData(newRsvpData);
-
-    // Save to Firebase
-    try {
-      await saveRSVPDataToFirebase(newRsvpData);
-      console.log(`RSVP updated for ${member} to ${status} for event ${eventId} and synchronized to Firebase`);
-    } catch (error) {
-      console.error("Error saving RSVP update to Firebase:", error);
-      // Still save to localStorage as backup
-      localStorage.setItem('rsvpData', JSON.stringify(newRsvpData));
-      alert("Your RSVP was saved locally but couldn't be synchronized. Please try refreshing later.");
-    }
-  };
-
-  // Update practice availability
-  const updatePracticeAvailability = async (eventId, member, availability) => {
-    const newPracticeData = {
-      ...practiceData,
-      [eventId]: {
-        ...practiceData[eventId],
-        [member]: availability
+  // Update RSVP - memoized
+  const updateRSVP = useCallback(async (eventId, member, status) => {
+    setRsvpData(prevRsvpData => {
+      const newRsvpData = { ...prevRsvpData };
+      if (!newRsvpData[eventId]) {
+        newRsvpData[eventId] = {};
       }
-    };
-    setPracticeData(newPracticeData);
+      newRsvpData[eventId][member] = status;
 
-    // Save to Firebase
-    try {
-      await savePracticeDataToFirebase(newPracticeData);
-      console.log(`Practice availability updated for ${member} on event ${eventId} and synchronized to Firebase`);
-    } catch (error) {
-      console.error("Error saving practice data to Firebase:", error);
-      // Still save encrypted to localStorage as backup
-      const { encryptData } = await import('../utils/encryption.js');
-      const encrypted = encryptData(newPracticeData);
-      localStorage.setItem('practiceData', encrypted);
-      alert("Your practice availability was saved locally but couldn't be synchronized. Please try refreshing later.");
-    }
-  };
+      // Save to Firebase asynchronously
+      saveRSVPDataToFirebase(newRsvpData).catch(error => {
+        console.error("Error saving RSVP update to Firebase:", error);
+        // Still save to localStorage as backup
+        localStorage.setItem('rsvpData', JSON.stringify(newRsvpData));
+        alert("Your RSVP was saved locally but couldn't be synchronized. Please try refreshing later.");
+      });
 
-  // Initialize the application
+      return newRsvpData;
+    });
+  }, []);
+
+  // Update practice availability - memoized
+  const updatePracticeAvailability = useCallback(async (eventId, member, availability) => {
+    setPracticeData(prevPracticeData => {
+      const newPracticeData = {
+        ...prevPracticeData,
+        [eventId]: {
+          ...prevPracticeData[eventId],
+          [member]: availability
+        }
+      };
+
+      // Save to Firebase asynchronously
+      savePracticeDataToFirebase(newPracticeData).catch(async (error) => {
+        console.error("Error saving practice data to Firebase:", error);
+        // Still save encrypted to localStorage as backup
+        const { encryptData } = await import('../utils/encryption.js');
+        const encrypted = encryptData(newPracticeData);
+        localStorage.setItem('practiceData', encrypted);
+        alert("Your practice availability was saved locally but couldn't be synchronized. Please try refreshing later.");
+      });
+
+      return newPracticeData;
+    });
+  }, []);
+
+  // Initialize the application - prevent multiple initializations
   useEffect(() => {
+    if (isInitialized.current) {
+      return;
+    }
+
     const initializeApp = async () => {
       try {
         // First load events data
@@ -244,7 +258,11 @@ export function useAppData() {
         // Then load user data from Firebase
         await loadUserData();
 
+        // Set up listeners after data is loaded
+        setupDataListeners();
+
         setLoading(false);
+        isInitialized.current = true;
         console.log("Application initialized with Firebase synchronization");
       } catch (error) {
         console.error("Error initializing application:", error);
@@ -254,7 +272,15 @@ export function useAppData() {
     };
 
     initializeApp();
-  }, []);
+
+    // Cleanup function to remove listeners
+    return () => {
+      if (listenersSetup.current) {
+        removeListeners();
+        listenersSetup.current = false;
+      }
+    };
+  }, [loadEvents, loadUserData, setupDataListeners]);
 
   // Initialize RSVP data when events and team members are loaded
   useEffect(() => {
