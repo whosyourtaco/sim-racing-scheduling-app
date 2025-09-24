@@ -1,5 +1,7 @@
 import { database } from './config.js';
 import { ref, set, get, onValue, off } from 'firebase/database';
+import { v4 as uuidv4 } from 'uuid';
+
 
 // Database references
 const teamMembersRef = ref(database, 'teamMembers');
@@ -154,8 +156,9 @@ export async function loadUserAccountsFromFirebase() {
 // Save user account to Firebase
 export async function saveUserAccountToFirebase(username, accountData) {
   try {
-    const userRef = ref(database, `userAccounts/${username}`);
-    await set(userRef, accountData);
+    const userId = uuidv4();
+    const userRef = ref(database, `userAccounts/${userId}`);
+    await set(userRef, {...accountData, userId});
     return true;
   } catch (error) {
     console.error("Error saving user account to Firebase:", error);

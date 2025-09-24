@@ -1,31 +1,32 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-function MainNavigation({ currentView, setCurrentView }) {
+function MainNavigation() {
   return (
     <nav className="main-navigation">
       <div className="nav-content">
         <div className="nav-tabs">
-          <button
-            className={`nav-tab ${currentView === 'calendar' ? 'active' : ''}`}
-            onClick={() => setCurrentView('calendar')}
+          <NavLink
+            to="/"
+            className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           >
             <span className="nav-tab-icon">📅</span>
             <span className="nav-tab-text">Upcoming Events</span>
-          </button>
-          <button
-            className={`nav-tab ${currentView === 'team' ? 'active' : ''}`}
-            onClick={() => setCurrentView('team')}
+          </NavLink>
+          <NavLink
+            to="/team"
+            className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           >
             <span className="nav-tab-icon">👥</span>
             <span className="nav-tab-text">Team Status</span>
-          </button>
-          <button
-            className={`nav-tab ${currentView === 'practice' ? 'active' : ''}`}
-            onClick={() => setCurrentView('practice')}
+          </NavLink>
+          <NavLink
+            to="/practice"
+            className={({ isActive }) => `nav-tab ${isActive ? 'active' : ''}`}
           >
             <span className="nav-tab-icon">🏃</span>
             <span className="nav-tab-text">Practice Scheduling</span>
-          </button>
+          </NavLink>
         </div>
       </div>
     </nav>

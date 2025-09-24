@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import MainNavigation from './components/MainNavigation.jsx';
-import CalendarView from './components/CalendarView.jsx';
-import TeamView from './components/TeamView.jsx';
-import PracticeScheduling from './components/PracticeScheduling.jsx';
+import CalendarPage from './pages/CalendarPage.jsx';
+import TeamPage from './pages/TeamPage.jsx';
+import PracticePage from './pages/PracticePage.jsx';
 import EventModal from './components/EventModal.jsx';
 import SecureAuthModal from './components/SecureAuthModal.jsx';
 import {useAuth} from './hooks/useAuth.js';
@@ -11,12 +12,9 @@ import {useAppData} from './hooks/useAppData.js';
 import './style.css';
 
 function App() {
-    const [currentView, setCurrentView] = useState('calendar');
     const [eventModalOpen, setEventModalOpen] = useState(false);
     const [authModalOpen, setAuthModalOpen] = useState(false);
     const [currentEventId, setCurrentEventId] = useState(null);
-    const [authenticationChecked, setAuthenticationChecked] = useState(false);
-    // Practice data is now managed by useAppData hook
 
     const {
         currentUser,
@@ -24,8 +22,6 @@ function App() {
         requiresMigration,
         registerUser,
         signIn,
-        signOut,
-        checkUserMigrationStatus,
         migrateLegacyUser
     } = useAuth();
 
@@ -35,12 +31,9 @@ function App() {
         setTeamMembers,
         rsvpData,
         setRsvpData,
-        practiceData,
-        setPracticeData,
         loading,
         refreshAppData,
-        updateRSVP,
-        updatePracticeAvailability
+        updateRSVP
     } = useAppData();
 
     const currentEvent = currentEventId ? events.find(e => e.id === currentEventId) : null;
@@ -81,11 +74,8 @@ function App() {
 
     // Force authentication on app load
     useEffect(() => {
-        if (!loading) {
-            setAuthenticationChecked(true);
-            if (!isAuthenticated) {
-                setAuthModalOpen(true);
-            }
+        if (!loading && !isAuthenticated) {
+            setAuthModalOpen(true);
         }
     }, [isAuthenticated, loading]);
 
@@ -118,60 +108,27 @@ function App() {
     }
 
     return (
-        <div className="app">
-            <Header
-                isAuthenticated={isAuthenticated}
-                currentUser={currentUser}
-                showAuthModal={showAuthModal}
-                refreshAppData={refreshAppData}
-            />
+        <Router basename="/sim-racing-scheduling-app">
+            <div className="app">
+                <Header
+                    isAuthenticated={isAuthenticated}
+                    currentUser={currentUser}
+                    showAuthModal={showAuthModal}
+                    refreshAppData={refreshAppData}
+                />
 
-            <header className="header">
-                <div className="header-content gap-4 justify-center">
-                    <MainNavigation
-                        currentView={currentView}
-                        setCurrentView={setCurrentView}
-                    />
-                </div>
-            </header>
+                <header className="header">
+                    <div className="header-content gap-4 justify-center">
+                        <MainNavigation />
+                    </div>
+                </header>
 
                 <main className="main-content">
-                    {currentView === 'calendar' && (
-                        <div className="view active">
-                            <CalendarView
-                                events={events}
-                                isAuthenticated={isAuthenticated}
-                                currentUser={currentUser}
-                                rsvpData={rsvpData}
-                                teamMembers={teamMembers}
-                                openEventModal={openEventModal}
-                            />
-                        </div>
-                    )}
-
-                    {currentView === 'team' && (
-                        <div className="view active">
-                            <TeamView
-                                events={events}
-                                teamMembers={teamMembers}
-                                rsvpData={rsvpData}
-                                currentUser={currentUser}
-                            />
-                        </div>
-                    )}
-
-                    {currentView === 'practice' && (
-                        <div className="view active">
-                            <PracticeScheduling
-                                events={events}
-                                currentUser={currentUser}
-                                teamMembers={teamMembers}
-                                practiceData={practiceData}
-                                updatePracticeAvailability={updatePracticeAvailability}
-                                rsvpData={rsvpData}
-                            />
-                        </div>
-                    )}
+                    <Routes>
+                        <Route path="/" element={<CalendarPage openEventModal={openEventModal} />} />
+                        <Route path="/team" element={<TeamPage />} />
+                        <Route path="/practice" element={<PracticePage />} />
+                    </Routes>
                 </main>
 
                 <EventModal
@@ -198,8 +155,9 @@ function App() {
                     isRequired={!isAuthenticated}
                     requiresMigration={requiresMigration}
                 />
-        </div>
-);
+            </div>
+        </Router>
+    );
 }
 
 export default App;
